@@ -6,7 +6,7 @@ import 'react-native-get-random-values';
 import '@ethersproject/shims';
 
 import { Wallet } from 'ethers';
-import { getGenericPassword, setGenericPassword } from 'react-native-keychain';
+import { NativeCodeWrapper } from './native_code_wrapper';
 
 let _cachedWallet: Wallet | undefined;
 
@@ -17,11 +17,20 @@ export async function createAccount(overwrite?: boolean) {
     throw 'Account already exists';
   }
 
+  console.log('Generating Wallet');
+
   const newWallet = Wallet.createRandom();
 
-  await setGenericPassword('rly-sdk-private-key', newWallet.mnemonic.phrase, {
-    service: 'rly-mnemonic',
-  });
+  console.log('Wallet Generated');
+
+  console.log('Going to save wallet');
+  const didSave = await NativeCodeWrapper.saveWalletMnemonic(
+    newWallet.mnemonic.phrase
+  );
+  console.log('Wallet Saved');
+  if (!didSave) {
+    throw 'Unable to save wallet to secure device storage';
+  }
   _cachedWallet = newWallet;
 
   return newWallet.address;
@@ -31,14 +40,16 @@ export async function getWallet() {
   if (_cachedWallet) {
     return _cachedWallet;
   }
-  const credentials = await getGenericPassword({ service: 'rly-mnemonic' });
 
-  if (!credentials) {
+  console.log('Calling native code to get wallet');
+  const walletMnemonic = await NativeCodeWrapper.getWalletMnemonic();
+  console.log('Native get wallet call returned');
+
+  if (!walletMnemonic) {
     return;
   }
 
-  const mnemonic = credentials.password;
-  const wallet = Wallet.fromMnemonic(mnemonic);
+  const wallet = Wallet.fromMnemonic(walletMnemonic);
   _cachedWallet = wallet;
   return wallet;
 }

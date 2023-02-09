@@ -28,6 +28,8 @@ export default function App() {
   }, [accountLoaded]);
 
   const createRlyAccount = async () => {
+    console.log('Going to create account');
+
     const rlyAct = await createAccount();
     setRlyAccount(rlyAct);
   };

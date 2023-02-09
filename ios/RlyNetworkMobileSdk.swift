@@ -24,7 +24,9 @@ class RlyNetworkMobileSdk: NSObject {
     _ resolve: RCTPromiseResolveBlock,
     rejecter reject: RCTPromiseRejectBlock
   ) -> Void {
+    print("I got here")
     resolve(walletKey)
+    print("finished calling resolve")
   }
 
   @objc
