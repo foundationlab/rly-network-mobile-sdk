@@ -24,4 +24,10 @@ export const NativeCodeWrapper = {
   getBundleId: (): Promise<string> => {
     return RlyNativeModule.getBundleId();
   },
+  saveWalletMnemonic: (mnemonic: string): Promise<boolean> => {
+    return RlyNativeModule.saveWalletMnemonic(mnemonic);
+  },
+  getWalletMnemonic: (): Promise<string> => {
+    return RlyNativeModule.getWalletMnemonic();
+  },
 };
